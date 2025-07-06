@@ -69,8 +69,7 @@ if __name__ == "__main__":
                         default="")
     parser.add_argument("--dataset", type=str, 
                         default="GIT")
-    parser.add_argument("--ip", type=str, 
-                        default="30.246.241.216:8000/v1")
+    parser.add_argument("--ip", type=str)
     parser.add_argument("--split", type=int, default=None)
     parser.add_argument("--part", type=int, default=None)
     parser.add_argument("--save_path", type=str, 
@@ -103,7 +102,6 @@ if __name__ == "__main__":
     if not os.path.exists(save_path): os.makedirs(save_path)
 
     openai_api_key = "EMPTY"
-    # openai_api_base = "http://30.246.241.126:8000/v1"
     openai_api_base = args.ip
 
     client = OpenAI(

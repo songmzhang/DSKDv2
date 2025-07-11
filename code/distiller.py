@@ -32,9 +32,10 @@ class Distiller(nn.Module):
         log_rank(f"student tokenizer: {self.student_tokenizer}")
         log_rank(f"teacher tokenizer: {self.teacher_tokenizer}")
         
-        if self.teacher_model and args.projector_config_path:
+        if self.teacher_model and "dual_space" in self.args.criterion:
             self.set_and_load_existing_projectors()
-            log_rank(f"projector structure: {self.projectors}")
+            log_rank(f"t2s projector structure: {self.t2s_projector}")
+            log_rank(f"s2t projector structure: {self.s2t_projector}")
         
         if args.teacher_to_student_token_mapping is not None:  # only for MinED
             self.tea2stu_token_mapping = json.load(open(args.teacher_to_student_token_mapping))
@@ -134,6 +135,7 @@ class Distiller(nn.Module):
             teacher_overlap_token_ids = torch.tensor([teacher_vocab[token] for token in overlap_tokens], dtype=torch.long, device=teacher_head.device)
             part_student_head = student_head[:, student_overlap_token_ids]
             part_teacher_head = teacher_head[:, teacher_overlap_token_ids]
+            self.student_overlap_token_ids = student_overlap_token_ids
             if self.args.topk_vocab != -1:
                 part_student_head = part_student_head[:, :self.args.topk_vocab]
                 part_teacher_head = part_teacher_head[:, :self.args.topk_vocab]
@@ -148,7 +150,7 @@ class Distiller(nn.Module):
             log_rank("Projector Initialization Finished")
 
         if self.args.init_s2t_projector:
-            self.part_teacher_head_pinv = torch.linalg.pinv(part_teacher_head.float())
+            self.part_teacher_head_pinv = torch.linalg.pinv(part_teacher_head.float()).to(part_teacher_head)
             self.part_teacher_head_pinv.requires_grad = False
 
     def load_student_model(self):

@@ -327,7 +327,7 @@ def finetune(
 
             if logging_output["global_step"] % args.log_interval == 0:
                 logging_output["lr"] = lr_scheduler.get_last_lr()[0]
-                if args.projector_config_path:
+                if "dual_space" in args.criterion:
                     logging_output["projector_lr"] = lr_scheduler.get_last_lr()[-1]
                 get_log(logging_output)
                 epoch_loss += sum(logging_output["loss"])
@@ -687,7 +687,6 @@ def main():
     model, optimizer, _, lr_scheduler = deepspeed.initialize(
         model=distiller,
         optimizer=optimizer,
-        args=args,
         lr_scheduler=lr_scheduler,
         mpu=None,
         config_params=ds_config

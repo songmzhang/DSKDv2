@@ -110,8 +110,8 @@ class DualSpaceKDV2WithETA(VariousDivergence):
             stu_lm_head = distiller.student_model.lm_head.weight.detach().transpose(0, 1)
             if self.args.topk_vocab != -1:
                 stu_lm_head = stu_lm_head[:, :self.args.topk_vocab]
-            distiller.s2t_projector = stu_lm_head @ distiller.part_teacher_head_pinv
-            stu_v_hiddens = hiddens @ distiller.s2t_projector
+            s2t_projector = stu_lm_head @ distiller.part_teacher_head_pinv
+            s2t_hiddens = hiddens @ s2t_projector
         else:
             stu_v_hiddens = distiller.s2t_projector(hiddens)
 
@@ -254,8 +254,8 @@ class DualSpaceKDV2WithETA(VariousDivergence):
             stu_lm_head = distiller.student_model.lm_head.weight.detach().transpose(0, 1)
             if self.args.topk_vocab != -1:
                 stu_lm_head = stu_lm_head[:, :self.args.topk_vocab]
-            distiller.s2t_projector = stu_lm_head @ distiller.part_teacher_head_pinv
-            stu_v_hiddens = hiddens @ distiller.s2t_projector
+            s2t_projector = stu_lm_head @ distiller.part_teacher_head_pinv
+            s2t_hiddens = hiddens @ s2t_projector
         else:
             stu_v_hiddens = distiller.s2t_projector(hiddens)
 
